@@ -77,7 +77,7 @@ export class Atracao {
         const listaDeAtracoes: Array<Atracao> = [];
 
         // Construção da query para selecionar as informações de um atracao
-        const querySelectAtracao = `SELECT * FROM atracao;`;
+        const querySelectAtracao = `SELECT * FROM atracao`;
 
         try {
             // Faz a consulta no banco de dados e retorna o resultado para a variável queryReturn
@@ -105,7 +105,7 @@ export class Atracao {
      * Cadastra um objeto do tipo Atracao no banco de dados
      * 
      * @param atracao Objeto do tipo Atracao
-     * @returns **true** caso sucesso, **false** caso erro
+     * @returns *true* caso sucesso, *false* caso erro
      */
     static async cadastrarAtracao(atracao: Atracao): Promise<any>;
     /**
@@ -113,7 +113,7 @@ export class Atracao {
      * 
      * @param atracao Objeto do tipo Atracao
      * @param idHabitat Id do habitat ao qual a atracão pertence
-     * @returns **true** caso sucesso, **false** caso erro
+     * @returns *true* caso sucesso, *false* caso erro
      */
     static async cadastrarAtracao(atracao: Atracao, idHabitat: Habitat): Promise<any>;
 
@@ -125,7 +125,7 @@ export class Atracao {
         let insertResult = false;
         let queryInsertAtracao: string;
         try {
-            if(!idHabitat) {
+            if (!idHabitat) {
                 // Construção da query para inserir as informações de um Mamifero. A query irá retornar o ID gerado para o animal pelo banco de dados
                 queryInsertAtracao = `INSERT INTO atracao (nomeatracao) 
                                             VALUES 
@@ -156,4 +156,30 @@ export class Atracao {
             return insertResult;
         }
     }
+
+    /**
+     * Remove um animal do banco de dados
+     * @param idAnimal 
+     * @returns 
+     */
+    static async removerAtracao(idAtracao: number): Promise<Boolean> {
+        let queryResult = false;
+
+        try {
+            const queryDeleteAtracao = `DELETE FROM atracao WHERE idatracao=${idAtracao} `;
+
+            await database.query(queryDeleteAtracao)
+            .then((result) => {
+                if (result.rowCount != 0) {
+                    queryResult = true;
+                }
+            })
+
+            return queryResult;
+        } catch (error) {
+            console.log(`Erro na consulta: ${error}`);
+            return queryResult;
+        }
+    }
 }
+
