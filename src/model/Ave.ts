@@ -64,7 +64,7 @@ export class Ave extends Animal {
         const listaDeAves: Array<Ave> = [];
 
         // Construção da query para selecionar as informações de um Ave
-        const querySelectAve = `SELECT * FROM animal;`;
+        const querySelectAve = `SELECT * FROM animal`;
 
         try {
             // Faz a consulta no banco de dados e retorna o resultado para a variável queryReturn
@@ -89,9 +89,9 @@ export class Ave extends Animal {
      * 
      * @param ave Objeto do tipo Ave
      * @param idHabitat Opcional - Id do habitat que será associado à ave
-     * @returns **true** caso sucesso, **false** caso erro
+     * @returns *true* caso sucesso, *false* caso erro
      */
-    static async cadastrarAve(ave: Ave, idHabitat: number): Promise<any> {
+    static async cadastrarAve(ave: Ave, idHabitat: number): Promise<Boolean> {
         // Cria uma variável do tipo booleano para guardar o status do resultado da query
         let insertResult = false;
 
@@ -126,20 +126,25 @@ export class Ave extends Animal {
             return insertResult;
         }
     }
-   
+
+    /**
+     * Remove um animal do banco de dados
+     * @param idAnimal 
+     * @returns 
+     */
     static async removerAve(idAnimal: number): Promise<Boolean> {
         let queryResult = false;
 
         try {
-            const queryDeleteAnimalHabitat = `DELETE FROM animal_habitat WHERE idanimal=${idAnimal}`;
-            
+            const queryDeleteAnimalHabitat = `DELETE FROM animal_habitat WHERE idanimal=${idAnimal} `;
+
             await database.query(queryDeleteAnimalHabitat)
-            .then(async(result) => {
-                if(result.rowCount !=0) {
-                    const queryDeleteAnimal = `DELETE FROM animal WHERE idanimal=${idAnimal}`
+            .then(async (result) => {
+                if(result.rowCount != 0) {
+                    const queryDeleteAnimal = `DELETE FROM animal WHERE idanimal=${idAnimal}`;
                     await database.query(queryDeleteAnimal)
-                    .then((result) => {
-                        if(result.rowCount !=0) {
+                    .then ((result) => {
+                        if(result.rowCount != 0) {
                             queryResult = true;
                         }
                     })
@@ -147,7 +152,29 @@ export class Ave extends Animal {
             })
 
             return queryResult;
+        } catch (error) {
+            console.log(`Erro na consulta: ${error}`);
+            return queryResult;
+        }
+    }
 
+    static async atualizarAve(ave: Ave, idAve: number): Promise<Boolean> {
+        let queryResult = false;
+
+        try {
+            const queryUpdateAve = `UPDATE animal SET
+                                        nomeAnimal='${ave.getNomeAnimal().toUpperCase()}',
+                                        idadeAnimal=${ave.getIdadeAnimal()},
+                                        generoAnimal='${ave.getGeneroAnimal().toUpperCase()}',
+                                        envergadura=${ave.getEnvergadura()}
+                                    WHERE idAnimal=${idAve}`;
+            await database.query(queryUpdateAve)
+            .then ((result) => {
+                if (result.rowCount !== 0) {
+                    queryResult = true;
+                }
+            })
+            return queryResult;
         } catch (error) {
             console.log(`Erro na consulta: ${error}`);
             return queryResult;

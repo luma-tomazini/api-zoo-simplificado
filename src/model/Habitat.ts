@@ -225,7 +225,7 @@ export class Habitat {
                         await database.query(queryDeleteHabitatAtracao)
                             .then(async (result) => {
                                 if (result.rowCount != 0) {
-                                    const queryDeleteHabitat = `DELETE FROM habitat WHERE idhabitat=${idHabitat}`;
+                            const queryDeleteHabitat = `DELETE FROM habitat WHERE idhabitat=${idHabitat}`;
                                     await database.query(queryDeleteHabitat)
                                         .then((result) => {
                                             if (result.rowCount != 0) {
@@ -237,6 +237,26 @@ export class Habitat {
                     }
                 })
 
+            return queryResult;
+        } catch (error) {
+            console.log(`Erro na consulta: ${error}`);
+            return queryResult;
+        }
+    }
+
+    static async atualizarHabitat(habitat: Habitat, idHabitat: number): Promise<Boolean> {
+        let queryResult = false;
+
+        try {
+            const queryUpdateHabitat = `UPDATE habitat SET
+                                            nomeHabitat='${habitat.getNomeHabitat().toUpperCase()}'
+                                        WHERE idHabitat=${idHabitat}`;
+            await database.query(queryUpdateHabitat)
+            .then ((result) => {
+                if (result.rowCount !== 0) {
+                    queryResult = true;
+                }
+            })
             return queryResult;
         } catch (error) {
             console.log(`Erro na consulta: ${error}`);
